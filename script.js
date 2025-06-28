@@ -22,26 +22,24 @@ const questionBank = [
   { question: "How can governments help protect water?", answers: ["Enforce pollution laws","Encourage dumping","Close treatment plants","Raise water wastage"], correct: 0 }
 ];
 
-// DOM references
 const diffButtons = document.querySelectorAll(".diff-btn");
-const diffSel = document.getElementById("difficulty-selection");
-const qContainer = document.getElementById("question-container");
-const questionEl  = document.getElementById("question");
-const answersEl   = document.getElementById("answer-buttons");
-const feedbackEl  = document.getElementById("feedback");
-const scoreEl     = document.getElementById("score");
-const resetBtn    = document.getElementById("reset-btn");
-const bgMusic     = document.getElementById("bg-music");
-const soundCorrect= document.getElementById("sound-correct");
-const soundWrong  = document.getElementById("sound-wrong");
-const soundWin    = document.getElementById("sound-win");
+const diffSel      = document.getElementById("difficulty-selection");
+const qContainer   = document.getElementById("question-container");
+const questionEl   = document.getElementById("question");
+const answersEl    = document.getElementById("answer-buttons");
+const feedbackEl   = document.getElementById("feedback");
+const scoreEl      = document.getElementById("score");
+const resetBtn     = document.getElementById("reset-btn");
+const bgMusic      = document.getElementById("bg-music");
+const soundCorrect = document.getElementById("sound-correct");
+const soundWrong   = document.getElementById("sound-wrong");
+const soundWin     = document.getElementById("sound-win");
 
 let questions = [], currentQuestion = 0, score = 0, correctCount = 0, winThreshold = 0;
 const milestones = [20, 50, 80];
 
-// Play bg music on difficulty select
 diffButtons.forEach(btn => btn.addEventListener("click", () => {
-  winThreshold = parseInt(btn.dataset.threshold);
+  winThreshold = parseInt(btn.dataset.threshold, 10);
   bgMusic.volume = 0.2;
   bgMusic.play().catch(() => {
     document.body.addEventListener("click", () => bgMusic.play(), { once: true });
@@ -63,13 +61,13 @@ function showQuestion() {
   const q = questions[currentQuestion];
   questionEl.textContent = `Q${currentQuestion+1}. ${q.question}`;
   answersEl.innerHTML = "";
+  feedbackEl.textContent = "";
   q.answers.forEach((ans, i) => {
     const btn = document.createElement("button");
     btn.textContent = ans;
     btn.addEventListener("click", () => selectAnswer(i));
     answersEl.appendChild(btn);
   });
-  feedbackEl.textContent = "";
 }
 
 function selectAnswer(i) {
@@ -111,5 +109,4 @@ function shuffle(arr) {
   return arr.sort(() => Math.random() - 0.5);
 }
 
-// Initially hide question container
 qContainer.classList.add("hidden");
