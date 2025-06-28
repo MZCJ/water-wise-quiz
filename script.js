@@ -22,36 +22,30 @@ const questionBank = [
   { question: "How can governments help protect water?", answers: ["Enforce pollution laws","Encourage dumping","Close treatment plants","Raise water wastage"], correct: 0 }
 ];
 
-// Elements
+// DOM references
 const diffButtons = document.querySelectorAll(".diff-btn");
 const diffSel = document.getElementById("difficulty-selection");
 const qContainer = document.getElementById("question-container");
-const questionEl = document.getElementById("question");
-const answersEl = document.getElementById("answer-buttons");
-const feedbackEl = document.getElementById("feedback");
-const scoreEl = document.getElementById("score");
-const nextBtn = document.getElementById("next-btn");
-const resetBtn = document.getElementById("reset-btn");
-const bgMusic = document.getElementById("bg-music");
-const soundCorrect = document.getElementById("sound-correct");
-const soundWrong = document.getElementById("sound-wrong");
-const soundWin = document.getElementById("sound-win");
+const questionEl  = document.getElementById("question");
+const answersEl   = document.getElementById("answer-buttons");
+const feedbackEl  = document.getElementById("feedback");
+const scoreEl     = document.getElementById("score");
+const resetBtn    = document.getElementById("reset-btn");
+const bgMusic     = document.getElementById("bg-music");
+const soundCorrect= document.getElementById("sound-correct");
+const soundWrong  = document.getElementById("sound-wrong");
+const soundWin    = document.getElementById("sound-win");
 
 let questions = [], currentQuestion = 0, score = 0, correctCount = 0, winThreshold = 0;
 const milestones = [20, 50, 80];
 
-// Play background music with user interaction fallback
-window.addEventListener("load", () => {
-  bgMusic.volume = 0.2;
-  const playPromise = bgMusic.play();
-  if (playPromise && playPromise.catch) {
-    document.body.addEventListener("click", () => bgMusic.play(), { once: true });
-  }
-});
-
-// Difficulty selection
+// Play bg music on difficulty select
 diffButtons.forEach(btn => btn.addEventListener("click", () => {
   winThreshold = parseInt(btn.dataset.threshold);
+  bgMusic.volume = 0.2;
+  bgMusic.play().catch(() => {
+    document.body.addEventListener("click", () => bgMusic.play(), { once: true });
+  });
   startGame();
 }));
 
@@ -67,7 +61,7 @@ function startGame() {
 
 function showQuestion() {
   const q = questions[currentQuestion];
-  questionEl.textContent = `Q${currentQuestion + 1}. ${q.question}`;
+  questionEl.textContent = `Q${currentQuestion+1}. ${q.question}`;
   answersEl.innerHTML = "";
   q.answers.forEach((ans, i) => {
     const btn = document.createElement("button");
@@ -76,13 +70,12 @@ function showQuestion() {
     answersEl.appendChild(btn);
   });
   feedbackEl.textContent = "";
-  nextBtn.style.display = "none";
 }
 
 function selectAnswer(i) {
   const q = questions[currentQuestion];
-  const correct = i === q.correct;
-  if (correct) {
+  const isCorrect = i === q.correct;
+  if (isCorrect) {
     score += 10; correctCount++;
     feedbackEl.textContent = "Correct! 🎉"; soundCorrect.play();
   } else {
@@ -94,30 +87,29 @@ function selectAnswer(i) {
   if (correctCount >= winThreshold) {
     feedbackEl.textContent = `You Win! Final Score: ${score}`; soundWin.play();
     bgMusic.pause(); bgMusic.currentTime = 0;
-    disableAnswers(); nextBtn.style.display = "none";
     return;
   }
-  disableAnswers(); nextBtn.style.display = "inline-block";
+  Array.from(answersEl.children).forEach(b => b.disabled = true);
+  setTimeout(() => {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      showQuestion();
+    } else {
+      feedbackEl.textContent = `Quiz Complete! Score: ${score}`;
+    }
+  }, 1000);
 }
-
-nextBtn.addEventListener("click", () => {
-  currentQuestion++;
-  if (currentQuestion < questions.length) showQuestion();
-  else feedbackEl.textContent = `Quiz Complete! Final Score: ${score}`;
-});
 
 resetBtn.addEventListener("click", () => {
-  diffSel.classList.remove("hidden"); qContainer.classList.add("hidden");
-  bgMusic.currentTime = 0; bgMusic.play();
+  diffSel.classList.remove("hidden");
+  qContainer.classList.add("hidden");
+  bgMusic.currentTime = 0;
+  bgMusic.play();
 });
-
-function disableAnswers() {
-  Array.from(answersEl.children).forEach(b => b.disabled = true);
-}
 
 function shuffle(arr) {
   return arr.sort(() => Math.random() - 0.5);
 }
 
-// Initial state
+// Initially hide question container
 qContainer.classList.add("hidden");

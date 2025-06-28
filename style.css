@@ -24,7 +24,6 @@ body {
 }
 .diff-btn,
 #answer-buttons button,
-#next-btn,
 #reset-btn {
   display: inline-block;
   margin: 5px;
