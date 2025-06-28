@@ -36,7 +36,7 @@ const soundWrong   = document.getElementById("sound-wrong");
 const soundWin     = document.getElementById("sound-win");
 
 let questions = [], currentQuestion = 0, score = 0, correctCount = 0, winThreshold = 0;
-const milestones = [20, 50, 80];
+const milestones = [40, 70, 100];
 
 diffButtons.forEach(btn => btn.addEventListener("click", () => {
   winThreshold = parseInt(btn.dataset.threshold, 10);
@@ -75,15 +75,17 @@ function selectAnswer(i) {
   const isCorrect = i === q.correct;
   if (isCorrect) {
     score += 10; correctCount++;
-    feedbackEl.textContent = "Correct! 🎉"; soundCorrect.play();
+    feedbackEl.textContent = "Correct! 🎉"; soundCorrect.play().catch(() => {});
   } else {
     score -= 5;
-    feedbackEl.textContent = "Wrong! 💧"; soundWrong.play();
+    feedbackEl.textContent = "Wrong! 💧"; soundWrong.play().catch(() => {});
   }
   scoreEl.textContent = score;
   if (milestones.includes(score)) alert(`Milestone reached: ${score} points!`);
   if (correctCount >= winThreshold) {
-    feedbackEl.textContent = `You Win! Final Score: ${score}`; soundWin.play();
+    Array.from(answersEl.children).forEach(b => b.disabled = true);
+    feedbackEl.textContent = `You Win! Final Score: ${score}`;
+    soundWin.play().catch(() => {});
     bgMusic.pause(); bgMusic.currentTime = 0;
     return;
   }
@@ -102,11 +104,19 @@ resetBtn.addEventListener("click", () => {
   diffSel.classList.remove("hidden");
   qContainer.classList.add("hidden");
   bgMusic.currentTime = 0;
-  bgMusic.play();
+  bgMusic.play().catch(() => {});
 });
 
-function shuffle(arr) {
-  return arr.sort(() => Math.random() - 0.5);
-}
 
 qContainer.classList.add("hidden");
+
+
+// Fisher–Yates shuffle
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}

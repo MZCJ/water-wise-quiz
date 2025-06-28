@@ -36,11 +36,23 @@
   </div>
 
   <!-- Background Music -->
-  <audio id="bg-music" src="background.mp3" loop></audio>
+  <audio id="bg-music" loop>
+    <source src="background.mp3" type="audio/mpeg">
+    <source src="background.ogg" type="audio/ogg">
+  </audio>
   <!-- Sound Effects -->
-  <audio id="sound-correct" src="correct.mp3"></audio>
-  <audio id="sound-wrong" src="wrong.mp3"></audio>
-  <audio id="sound-win" src="win.mp3"></audio>
+  <audio id="sound-correct">
+    <source src="correct.mp3" type="audio/mpeg">
+    <source src="correct.ogg" type="audio/ogg">
+  </audio>
+  <audio id="sound-wrong">
+    <source src="wrong.mp3" type="audio/mpeg">
+    <source src="wrong.ogg" type="audio/ogg">
+  </audio>
+  <audio id="sound-win">
+    <source src="win.mp3" type="audio/mpeg">
+    <source src="win.ogg" type="audio/ogg">
+  </audio>
 
   <script src="script.js"></script>
 </body>
