@@ -1,12 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
 body {
-  font-family: sans-serif;
+  font-family: 'Montserrat', sans-serif;
   background-color: #f0f8ff;
   text-align: center;
   margin: 0;
   padding: 20px;
 }
 .game-container {
-  max-width: 500px;
+  max-width: 600px;
   margin: auto;
   background: white;
   padding: 20px;
@@ -15,18 +17,40 @@ body {
 }
 .logo {
   width: 100px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
-#answer-buttons button {
-  display: block;
-  margin: 10px auto;
+.center {
+  margin: 20px 0;
+}
+.diff-btn,
+#answer-buttons button,
+#next-btn,
+#reset-btn {
+  display: inline-block;
+  margin: 5px;
   padding: 10px 20px;
-  width: 80%;
   font-size: 1rem;
   border-radius: 5px;
+  cursor: pointer;
 }
-button {
-  margin-top: 10px;
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+#answer-buttons {
+  margin-top: 15px;
+}
+.hidden {
+  display: none;
+}
+footer {
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
+footer a {
+  color: #000;
+  text-decoration: none;
+  font-weight: 600;
 }
 @media (max-width: 600px) {
   .game-container {

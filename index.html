@@ -8,17 +8,41 @@
 </head>
 <body>
   <div class="game-container">
-    <img src="logo.png" alt="charity: water logo" class="logo" />
+    <img src="logo.png" alt="charity: water logo" class="logo">
     <h1>Water Wise Quiz</h1>
-    <div id="question-container">
+
+    <!-- Difficulty Selection -->
+    <div id="difficulty-selection" class="center">
+      <p>Select Difficulty:</p>
+      <button class="diff-btn" data-threshold="4">Easy</button>
+      <button class="diff-btn" data-threshold="7">Normal</button>
+      <button class="diff-btn" data-threshold="10">Hard</button>
+    </div>
+
+    <!-- Question Area -->
+    <div id="question-container" class="hidden">
       <p id="question">Loading...</p>
       <div id="answer-buttons"></div>
+      <p id="feedback"></p>
+      <p>Score: <span id="score">0</span></p>
+      <button id="next-btn">Next Question</button>
+      <button id="reset-btn">Reset Game</button>
     </div>
-    <div id="feedback"></div>
-    <p>Score: <span id="score">0</span></p>
-    <button id="next-btn">Next Question</button>
-    <button id="reset-btn">Reset Game</button>
+
+    <!-- Footer Links -->
+    <footer>
+      <a href="https://www.charitywater.org" target="_blank">charity: water</a> |
+      <a href="https://www.charitywater.org/donate" target="_blank">Donate</a>
+    </footer>
   </div>
+
+  <!-- Background Music -->
+  <audio id="bg-music" src="background.mp3" loop autoplay></audio>
+  <!-- Sound Effects -->
+  <audio id="sound-correct" src="correct.mp3"></audio>
+  <audio id="sound-wrong" src="wrong.mp3"></audio>
+  <audio id="sound-win" src="win.mp3"></audio>
+
   <script src="script.js"></script>
 </body>
 </html>

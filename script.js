@@ -1,4 +1,4 @@
-// Complete question bank: 20 water protection questions
+// 20 water protection questions
 const questionBank = [
   { question: "Which practice helps reduce water waste?", answers: ["Turn off the tap while brushing","Leave the tap running","Take extra hot showers","Water plants at midday"], correct: 0 },
   { question: "What household device can save water?", answers: ["Low-flow showerhead","Standard faucet","Open irrigation","Powerful hose"], correct: 0 },
@@ -22,26 +22,48 @@ const questionBank = [
   { question: "How can governments help protect water?", answers: ["Enforce pollution laws","Encourage dumping","Close treatment plants","Raise water wastage"], correct: 0 }
 ];
 
-// Shuffle and pick 10 questions
-function shuffle(array) {
-  let a = array.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-const questions = shuffle(questionBank).slice(0, 10);
-
-let currentQuestion = 0;
-let score = 0;
-
+// Elements
+const diffButtons = document.querySelectorAll(".diff-btn");
+const diffSel = document.getElementById("difficulty-selection");
+const qContainer = document.getElementById("question-container");
 const questionEl = document.getElementById("question");
 const answersEl = document.getElementById("answer-buttons");
-const scoreEl = document.getElementById("score");
 const feedbackEl = document.getElementById("feedback");
+const scoreEl = document.getElementById("score");
 const nextBtn = document.getElementById("next-btn");
 const resetBtn = document.getElementById("reset-btn");
+const bgMusic = document.getElementById("bg-music");
+const soundCorrect = document.getElementById("sound-correct");
+const soundWrong = document.getElementById("sound-wrong");
+const soundWin = document.getElementById("sound-win");
+
+let questions = [], currentQuestion = 0, score = 0, correctCount = 0, winThreshold = 0;
+const milestones = [20, 50, 80];
+
+// Play background music with user interaction fallback
+window.addEventListener("load", () => {
+  bgMusic.volume = 0.2;
+  const playPromise = bgMusic.play();
+  if (playPromise && playPromise.catch) {
+    document.body.addEventListener("click", () => bgMusic.play(), { once: true });
+  }
+});
+
+// Difficulty selection
+diffButtons.forEach(btn => btn.addEventListener("click", () => {
+  winThreshold = parseInt(btn.dataset.threshold);
+  startGame();
+}));
+
+function startGame() {
+  diffSel.classList.add("hidden");
+  qContainer.classList.remove("hidden");
+  score = 0; correctCount = 0;
+  scoreEl.textContent = score;
+  questions = shuffle(questionBank).slice(0, 10);
+  currentQuestion = 0;
+  showQuestion();
+}
 
 function showQuestion() {
   const q = questions[currentQuestion];
@@ -50,48 +72,52 @@ function showQuestion() {
   q.answers.forEach((ans, i) => {
     const btn = document.createElement("button");
     btn.textContent = ans;
-    btn.onclick = () => checkAnswer(i);
+    btn.addEventListener("click", () => selectAnswer(i));
     answersEl.appendChild(btn);
   });
   feedbackEl.textContent = "";
   nextBtn.style.display = "none";
 }
 
-function checkAnswer(index) {
-  const isCorrect = index === questions[currentQuestion].correct;
-  if (isCorrect) {
-    score += 10;
-    feedbackEl.textContent = "Correct!";
-    feedbackEl.style.color = "green";
+function selectAnswer(i) {
+  const q = questions[currentQuestion];
+  const correct = i === q.correct;
+  if (correct) {
+    score += 10; correctCount++;
+    feedbackEl.textContent = "Correct! 🎉"; soundCorrect.play();
   } else {
     score -= 5;
-    feedbackEl.textContent = "Wrong!";
-    feedbackEl.style.color = "red";
+    feedbackEl.textContent = "Wrong! 💧"; soundWrong.play();
   }
   scoreEl.textContent = score;
-  nextBtn.style.display = "inline-block";
+  if (milestones.includes(score)) alert(`Milestone reached: ${score} points!`);
+  if (correctCount >= winThreshold) {
+    feedbackEl.textContent = `You Win! Final Score: ${score}`; soundWin.play();
+    bgMusic.pause(); bgMusic.currentTime = 0;
+    disableAnswers(); nextBtn.style.display = "none";
+    return;
+  }
+  disableAnswers(); nextBtn.style.display = "inline-block";
 }
 
-function nextQuestion() {
+nextBtn.addEventListener("click", () => {
   currentQuestion++;
-  if (currentQuestion >= questions.length) {
-    questionEl.textContent = "Quiz Complete!";
-    answersEl.innerHTML = "";
-    feedbackEl.textContent = `Your final score: ${score}`;
-    nextBtn.style.display = "none";
-  } else {
-    showQuestion();
-  }
+  if (currentQuestion < questions.length) showQuestion();
+  else feedbackEl.textContent = `Quiz Complete! Final Score: ${score}`;
+});
+
+resetBtn.addEventListener("click", () => {
+  diffSel.classList.remove("hidden"); qContainer.classList.add("hidden");
+  bgMusic.currentTime = 0; bgMusic.play();
+});
+
+function disableAnswers() {
+  Array.from(answersEl.children).forEach(b => b.disabled = true);
 }
 
-function resetGame() {
-  currentQuestion = 0;
-  score = 0;
-  scoreEl.textContent = score;
-  showQuestion();
+function shuffle(arr) {
+  return arr.sort(() => Math.random() - 0.5);
 }
 
-nextBtn.onclick = nextQuestion;
-resetBtn.onclick = resetGame;
-
-showQuestion();
+// Initial state
+qContainer.classList.add("hidden");
